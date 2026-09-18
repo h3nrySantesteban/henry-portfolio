@@ -11,7 +11,7 @@ export function Hero({ settings }: { settings: SiteSettings }) {
     // svh (not vh): on phones vh ignores the browser's URL/toolbars, so the hero
     // overflowed the visible screen. Minus the sticky header (5rem + 1px border).
     <section className="flex min-h-[calc(100svh-5rem-1px)] flex-col items-center justify-center px-6 text-center">
-      <h1 className="max-w-3xl text-5xl font-semibold tracking-tight text-balance sm:text-6xl">
+      <h1 data-hero-title className="max-w-3xl text-5xl font-semibold tracking-tight text-balance sm:text-6xl">
         {lines.map((line, i) => (
           <span key={i} className="block">
             {line}

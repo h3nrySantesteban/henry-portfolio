@@ -16,7 +16,7 @@ export default async function Home() {
 
   return (
     <>
-      <Header fullName={settings.full_name} />
+      <Header fullName={settings.full_name} compactLogo />
       <main className="flex-1">
         <Hero settings={settings} />
         <TrabajosSection companies={companies} />

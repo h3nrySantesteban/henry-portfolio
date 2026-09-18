@@ -1,17 +1,42 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
+import { AnimatedLogo } from "@/components/site/AnimatedLogo";
 
 const NAV_LINKS = [
-  { href: "/#trabajos", label: "Trabajos" },
+  { href: "/#trabajos", label: "Trayectoria" },
   { href: "/#soluciones", label: "Soluciones" },
   { href: "/#blog", label: "Blog" },
 ];
 
-export function Header({ fullName }: { fullName: string }) {
+// h-20 row + 1px bottom border.
+const HEADER_HEIGHT = 81;
+
+/**
+ * `compactLogo`: show the logo as "HS" until the hero's big title (the element
+ * marked `data-hero-title`) has scrolled up under the header, then unfold the
+ * full name. Without it the full name is always shown.
+ */
+export function Header({ fullName, compactLogo = false }: { fullName: string; compactLogo?: boolean }) {
   const [open, setOpen] = useState(false);
+  const [logoExpanded, setLogoExpanded] = useState(!compactLogo);
+
+  useEffect(() => {
+    if (!compactLogo) return;
+    const title = document.querySelector("[data-hero-title]");
+    if (!title) return;
+
+    // The observed area starts below the header, so "not intersecting and
+    // above it" means the title has scrolled away upwards (not just off-screen below).
+    const observer = new IntersectionObserver(
+      ([entry]) => setLogoExpanded(!entry.isIntersecting && entry.boundingClientRect.bottom <= HEADER_HEIGHT),
+      { rootMargin: `-${HEADER_HEIGHT}px 0px 0px 0px` },
+    );
+    observer.observe(title);
+    return () => observer.disconnect();
+  }, [compactLogo]);
 
   return (
     <header className="sticky top-0 z-50 border-b border-surface/70 bg-background/80 backdrop-blur-md">
@@ -25,9 +50,10 @@ export function Header({ fullName }: { fullName: string }) {
             // eslint-disable-next-line @next/next/no-location-assign-relative-destination
             window.location.assign("/");
           }}
+          aria-label={fullName}
           className="text-lg font-semibold tracking-tight text-foreground"
         >
-          {fullName}
+          <AnimatedLogo fullName={fullName} expanded={logoExpanded} />
         </Link>
 
         <nav className="hidden items-center gap-10 md:flex">

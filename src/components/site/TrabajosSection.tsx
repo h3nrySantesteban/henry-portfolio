@@ -79,7 +79,7 @@ export function TrabajosSection({ companies }: { companies: Company[] }) {
     <section id="trabajos" className="mx-auto max-w-4xl scroll-mt-24 px-6 py-28">
       <div className="mb-10 flex flex-wrap items-end justify-between gap-6">
         <div>
-          <p className="text-sm font-medium text-foreground/50">Experiencia</p>
+          <p className="text-sm font-medium text-foreground/50">Trayectoria</p>
           <h2 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">Empresas</h2>
         </div>
 
@@ -98,7 +98,7 @@ export function TrabajosSection({ companies }: { companies: Company[] }) {
       <div
         ref={scrollerRef}
         className={cn(
-          "flex items-center gap-3 overflow-x-auto overscroll-x-contain",
+          "flex items-center gap-3 overflow-x-auto overscroll-x-contain sm:gap-4",
           // scroll-pl-1 matches px-1, so the first logo's snap point is scrollLeft 0.
           isCarousel && "scrollbar-none snap-x snap-mandatory scroll-pl-1 px-1",
         )}
@@ -113,7 +113,7 @@ export function TrabajosSection({ companies }: { companies: Company[] }) {
             onClick={() => setSelected(i)}
             aria-pressed={i === selected}
             className={cn(
-              "flex shrink-0 snap-start touch-manipulation items-center justify-center px-3 py-2 transition-opacity first:ml-auto last:mr-auto",
+              "flex shrink-0 snap-start touch-manipulation items-center justify-center px-4 py-2 transition-opacity first:ml-auto last:mr-auto sm:px-6 sm:py-3",
               i === selected ? "opacity-100" : "opacity-50 hover:opacity-80",
             )}
           >
@@ -121,9 +121,9 @@ export function TrabajosSection({ companies }: { companies: Company[] }) {
               <Image
                 src={company.logo_url}
                 alt={company.name}
-                width={140}
-                height={56}
-                className="h-14 w-auto max-w-36 object-contain"
+                width={200}
+                height={80}
+                className="h-16 w-auto max-w-40 object-contain sm:h-20 sm:max-w-48"
               />
             ) : (
               <span className="flex items-center gap-1.5 text-sm text-foreground/70">
