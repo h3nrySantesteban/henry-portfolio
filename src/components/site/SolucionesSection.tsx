@@ -4,17 +4,15 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { ArrowLeft, ArrowRight, ArrowUpRight, ChevronDown, Layers } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { CarouselArrow, useCarouselArrows } from "@/components/site/carousel";
 import type { Solution } from "@/lib/database.types";
 
 export function SolucionesSection({ solutions }: { solutions: Solution[] }) {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+  const { canPrev, canNext, step } = useCarouselArrows(scrollerRef, solutions.length);
 
   if (solutions.length === 0) return null;
-
-  function scrollBy(dir: 1 | -1) {
-    scrollerRef.current?.scrollBy({ left: dir * 420, behavior: "smooth" });
-  }
 
   function handleToggle(id: string) {
     if (expandedIds.has(id)) {
@@ -38,22 +36,12 @@ export function SolucionesSection({ solutions }: { solutions: Solution[] }) {
 
         {solutions.length > 2 && (
           <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => scrollBy(-1)}
-              aria-label="Anterior"
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-surface text-foreground/70 transition-colors hover:bg-surface hover:text-foreground"
-            >
+            <CarouselArrow label="Anterior" disabled={!canPrev} onClick={() => step(-1)}>
               <ArrowLeft size={16} />
-            </button>
-            <button
-              type="button"
-              onClick={() => scrollBy(1)}
-              aria-label="Siguiente"
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-surface text-foreground/70 transition-colors hover:bg-surface hover:text-foreground"
-            >
+            </CarouselArrow>
+            <CarouselArrow label="Siguiente" disabled={!canNext} onClick={() => step(1)}>
               <ArrowRight size={16} />
-            </button>
+            </CarouselArrow>
           </div>
         )}
       </div>
