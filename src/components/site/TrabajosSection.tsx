@@ -15,10 +15,15 @@ export function TrabajosSection({ companies }: { companies: Company[] }) {
   const [selected, setSelected] = useState(0);
   const [caret, setCaret] = useState<CaretState | null>(null);
   const [isCarousel, setIsCarousel] = useState(false);
+  const [canPrev, setCanPrev] = useState(false);
+  const [canNext, setCanNext] = useState(false);
 
   const scrollerRef = useRef<HTMLDivElement>(null);
   const buttonRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const panelRef = useRef<HTMLDivElement>(null);
+  // Where the last arrow press is heading, so a second quick tap keeps
+  // advancing instead of re-reading the mid-animation scroll position.
+  const pendingStep = useRef<{ target: number; at: number } | null>(null);
 
   useEffect(() => {
     const scroller = scrollerRef.current;
@@ -27,6 +32,9 @@ export function TrabajosSection({ companies }: { companies: Company[] }) {
 
     const measure = () => {
       setIsCarousel(scroller.scrollWidth > scroller.clientWidth + 1);
+      const maxScroll = scroller.scrollWidth - scroller.clientWidth;
+      setCanPrev(scroller.scrollLeft > 1);
+      setCanNext(scroller.scrollLeft < maxScroll - 1);
 
       const btn = buttonRefs.current[selected];
       if (!btn) return;
@@ -73,8 +81,30 @@ export function TrabajosSection({ companies }: { companies: Company[] }) {
 
   const active = companies[selected];
 
-  function scrollBy(dir: 1 | -1) {
-    scrollerRef.current?.scrollBy({ left: dir * 200, behavior: "smooth" });
+  // Moves one logo at a time to the real position of its neighbour (a fixed
+  // pixel step drifted out of sync with the logos and never told you when you
+  // had reached the end).
+  function step(dir: 1 | -1) {
+    const scroller = scrollerRef.current;
+    if (!scroller) return;
+
+    const maxScroll = scroller.scrollWidth - scroller.clientWidth;
+    const origin = scroller.getBoundingClientRect().left - scroller.scrollLeft;
+    const padding = parseFloat(getComputedStyle(scroller).paddingLeft) || 0;
+    const lefts = buttonRefs.current.flatMap((btn) =>
+      btn ? [btn.getBoundingClientRect().left - origin - padding] : [],
+    );
+
+    const pending = pendingStep.current;
+    const from = pending && performance.now() - pending.at < 500 ? pending.target : scroller.scrollLeft;
+    const target =
+      dir === 1
+        ? (lefts.find((l) => l > from + 8) ?? maxScroll)
+        : (lefts.findLast((l) => l < from - 8) ?? 0);
+    const clamped = Math.min(Math.max(target, 0), maxScroll);
+
+    pendingStep.current = { target: clamped, at: performance.now() };
+    scroller.scrollTo({ left: clamped, behavior: "smooth" });
   }
 
   return (
@@ -89,22 +119,12 @@ export function TrabajosSection({ companies }: { companies: Company[] }) {
 
         {isCarousel && (
           <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => scrollBy(-1)}
-              aria-label="Anterior"
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-surface text-foreground/70 transition-colors hover:bg-surface hover:text-foreground"
-            >
+            <CarouselArrow label="Anterior" disabled={!canPrev} onClick={() => step(-1)}>
               <ArrowLeft size={16} />
-            </button>
-            <button
-              type="button"
-              onClick={() => scrollBy(1)}
-              aria-label="Siguiente"
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-surface text-foreground/70 transition-colors hover:bg-surface hover:text-foreground"
-            >
+            </CarouselArrow>
+            <CarouselArrow label="Siguiente" disabled={!canNext} onClick={() => step(1)}>
               <ArrowRight size={16} />
-            </button>
+            </CarouselArrow>
           </div>
         )}
       </div>
@@ -113,7 +133,7 @@ export function TrabajosSection({ companies }: { companies: Company[] }) {
         ref={scrollerRef}
         className={cn(
           "flex items-center gap-3 overflow-x-auto overscroll-x-contain",
-          isCarousel && "scrollbar-none snap-x snap-mandatory scroll-smooth px-1",
+          isCarousel && "scrollbar-none px-1",
         )}
       >
         {companies.map((company, i) => (
@@ -126,7 +146,7 @@ export function TrabajosSection({ companies }: { companies: Company[] }) {
             onClick={() => setSelected(i)}
             aria-pressed={i === selected}
             className={cn(
-              "flex shrink-0 snap-start items-center justify-center px-3 py-2 transition-opacity first:ml-auto last:mr-auto",
+              "flex shrink-0 touch-manipulation items-center justify-center px-3 py-2 transition-opacity first:ml-auto last:mr-auto",
               i === selected ? "opacity-100" : "opacity-50 hover:opacity-80",
             )}
           >
@@ -195,5 +215,30 @@ export function TrabajosSection({ companies }: { companies: Company[] }) {
         </div>
       </div>
     </section>
+  );
+}
+
+function CarouselArrow({
+  label,
+  disabled,
+  onClick,
+  children,
+}: {
+  label: string;
+  disabled: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      aria-label={label}
+      // touch-manipulation: no double-tap-to-zoom when tapping the arrow twice quickly.
+      className="flex h-10 w-10 touch-manipulation items-center justify-center rounded-full border border-surface text-foreground/70 transition-[color,background-color,opacity] enabled:hover:bg-surface enabled:hover:text-foreground disabled:opacity-30"
+    >
+      {children}
+    </button>
   );
 }
