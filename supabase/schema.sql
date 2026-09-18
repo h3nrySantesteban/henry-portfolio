@@ -14,6 +14,7 @@ create table if not exists public.companies (
   period text not null,
   description text not null default '',
   logo_url text,
+  website_url text,
   order_index integer not null default 0,
   created_at timestamptz not null default now()
 );

@@ -31,8 +31,8 @@ export async function getCompanies(): Promise<Company[]> {
     const { data } = await supabase
       .from("companies")
       .select("*")
-      .order("order_index", { ascending: true })
-      .order("created_at", { ascending: true });
+      .order("order_index", { ascending: false })
+      .order("created_at", { ascending: false });
     return data ?? [];
   } catch {
     return [];

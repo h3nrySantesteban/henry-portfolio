@@ -14,6 +14,7 @@ export function CompanyForm({ initial }: { initial?: Company }) {
   const [period, setPeriod] = useState(initial?.period ?? "");
   const [description, setDescription] = useState(initial?.description ?? "");
   const [logoUrl, setLogoUrl] = useState<string | null>(initial?.logo_url ?? null);
+  const [websiteUrl, setWebsiteUrl] = useState(initial?.website_url ?? "");
   const [orderIndex, setOrderIndex] = useState(initial?.order_index ?? 0);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -30,6 +31,7 @@ export function CompanyForm({ initial }: { initial?: Company }) {
       period,
       description,
       logo_url: logoUrl,
+      website_url: websiteUrl || null,
       order_index: orderIndex,
     };
 
@@ -89,6 +91,16 @@ export function CompanyForm({ initial }: { initial?: Company }) {
           onChange={(e) => setDescription(e.target.value)}
           rows={5}
           className="input resize-none"
+        />
+      </Field>
+
+      <Field label="Enlace (opcional)">
+        <input
+          type="url"
+          value={websiteUrl}
+          onChange={(e) => setWebsiteUrl(e.target.value)}
+          placeholder="https://..."
+          className="input"
         />
       </Field>
 

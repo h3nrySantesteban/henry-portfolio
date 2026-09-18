@@ -2,9 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { ArrowLeft, ArrowRight, Building2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, ArrowUpRight, Building2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Company } from "@/lib/database.types";
+
+const CARET_SIZE = 16;
+const CORNER_RADIUS = 16;
 
 type CaretState = { mode: "top"; left: number } | { mode: "left" } | { mode: "right" };
 
@@ -19,52 +22,52 @@ export function TrabajosSection({ companies }: { companies: Company[] }) {
 
   useEffect(() => {
     const scroller = scrollerRef.current;
-    if (!scroller) return;
+    const panel = panelRef.current;
+    if (!scroller || !panel) return;
 
-    function checkOverflow() {
-      if (!scroller) return;
+    const measure = () => {
       setIsCarousel(scroller.scrollWidth > scroller.clientWidth + 1);
-    }
 
-    checkOverflow();
-    const observer = new ResizeObserver(checkOverflow);
-    observer.observe(scroller);
-    return () => observer.disconnect();
-  }, [companies.length]);
-
-  useEffect(() => {
-    function updateCaret() {
       const btn = buttonRefs.current[selected];
-      const panel = panelRef.current;
-      const scroller = scrollerRef.current;
-      if (!btn || !panel || !scroller) return;
+      if (!btn) return;
 
       const btnRect = btn.getBoundingClientRect();
       const scrollerRect = scroller.getBoundingClientRect();
       const panelRect = panel.getBoundingClientRect();
+      const btnCenter = btnRect.left + btnRect.width / 2;
 
-      if (btnRect.right <= scrollerRect.left) {
+      if (btnCenter < scrollerRect.left) {
         // Selected logo scrolled out of view to the left: point at the
         // panel's left edge instead of clamping the top caret in place.
         setCaret({ mode: "left" });
-      } else if (btnRect.left >= scrollerRect.right) {
+      } else if (btnCenter > scrollerRect.right) {
         setCaret({ mode: "right" });
       } else {
-        const center = btnRect.left + btnRect.width / 2 - panelRect.left;
-        setCaret({ mode: "top", left: Math.min(Math.max(center, 24), panelRect.width - 24) });
+        // Keep the caret's whole base clear of the panel's rounded corners
+        // (16px radius + 16px half-base), otherwise it floats over the curve.
+        const inset = CORNER_RADIUS + CARET_SIZE;
+        const center = btnCenter - panelRect.left;
+        setCaret({ mode: "top", left: Math.min(Math.max(center, inset), panelRect.width - inset) });
       }
-    }
-
-    updateCaret();
-
-    const scroller = scrollerRef.current;
-    window.addEventListener("resize", updateCaret);
-    scroller?.addEventListener("scroll", updateCaret);
-    return () => {
-      window.removeEventListener("resize", updateCaret);
-      scroller?.removeEventListener("scroll", updateCaret);
     };
-  }, [selected, companies.length, isCarousel]);
+
+    measure();
+
+    // Logos are lazy-loaded, so buttons change width after mount: observe
+    // every button (not just the scroller) to re-measure when they do.
+    const observer = new ResizeObserver(measure);
+    observer.observe(scroller);
+    observer.observe(panel);
+    buttonRefs.current.forEach((btn) => btn && observer.observe(btn));
+
+    scroller.addEventListener("scroll", measure);
+    window.addEventListener("resize", measure);
+    return () => {
+      observer.disconnect();
+      scroller.removeEventListener("scroll", measure);
+      window.removeEventListener("resize", measure);
+    };
+  }, [selected, companies.length]);
 
   if (companies.length === 0) return null;
 
@@ -110,9 +113,7 @@ export function TrabajosSection({ companies }: { companies: Company[] }) {
         ref={scrollerRef}
         className={cn(
           "flex items-center gap-3 overflow-x-auto",
-          isCarousel
-            ? "scrollbar-none snap-x snap-mandatory scroll-smooth px-1"
-            : "justify-center",
+          isCarousel && "scrollbar-none snap-x snap-mandatory scroll-smooth px-1",
         )}
       >
         {companies.map((company, i) => (
@@ -125,7 +126,7 @@ export function TrabajosSection({ companies }: { companies: Company[] }) {
             onClick={() => setSelected(i)}
             aria-pressed={i === selected}
             className={cn(
-              "flex shrink-0 snap-start items-center justify-center px-3 py-2 transition-opacity",
+              "flex shrink-0 snap-start items-center justify-center px-3 py-2 transition-opacity first:ml-auto last:mr-auto",
               i === selected ? "opacity-100" : "opacity-50 hover:opacity-80",
             )}
           >
@@ -173,7 +174,20 @@ export function TrabajosSection({ companies }: { companies: Company[] }) {
             <h3 className="text-xl font-medium">
               {active.role} · {active.name}
             </h3>
-            <span className="text-sm text-foreground/50">{active.period}</span>
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-foreground/50">{active.period}</span>
+              {active.website_url && (
+                <a
+                  href={active.website_url}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  aria-label={`Ver ${active.name}`}
+                  className="shrink-0 text-foreground/50 transition-colors hover:text-foreground"
+                >
+                  <ArrowUpRight size={18} />
+                </a>
+              )}
+            </div>
           </div>
           <p className="mt-4 whitespace-pre-line text-foreground/70">
             {active.description || "Próximamente más información sobre este puesto."}
