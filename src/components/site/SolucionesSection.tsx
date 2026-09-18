@@ -8,11 +8,24 @@ import type { Solution } from "@/lib/database.types";
 
 export function SolucionesSection({ solutions }: { solutions: Solution[] }) {
   const scrollerRef = useRef<HTMLDivElement>(null);
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 
   if (solutions.length === 0) return null;
 
   function scrollBy(dir: 1 | -1) {
     scrollerRef.current?.scrollBy({ left: dir * 420, behavior: "smooth" });
+  }
+
+  function handleToggle(id: string) {
+    if (expandedIds.has(id)) {
+      // Closing any open one closes them all, and scrolls back up to the
+      // section: the same spot the "Soluciones" nav link lands on.
+      setExpandedIds(new Set());
+      document.getElementById("soluciones")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+      // Opening only expands the selected one; the others are left as they are.
+      setExpandedIds((prev) => new Set(prev).add(id));
+    }
   }
 
   return (
@@ -84,7 +97,11 @@ export function SolucionesSection({ solutions }: { solutions: Solution[] }) {
                 </a>
               )}
             </div>
-            <ExpandableDescription text={solution.description} />
+            <ExpandableDescription
+              text={solution.description}
+              expanded={expandedIds.has(solution.id)}
+              onToggle={() => handleToggle(solution.id)}
+            />
           </article>
         ))}
       </div>
@@ -94,8 +111,15 @@ export function SolucionesSection({ solutions }: { solutions: Solution[] }) {
 
 const COLLAPSED_HEIGHT = 72;
 
-function ExpandableDescription({ text }: { text: string }) {
-  const [expanded, setExpanded] = useState(false);
+function ExpandableDescription({
+  text,
+  expanded,
+  onToggle,
+}: {
+  text: string;
+  expanded: boolean;
+  onToggle: () => void;
+}) {
   const [fullHeight, setFullHeight] = useState(COLLAPSED_HEIGHT);
   const textRef = useRef<HTMLParagraphElement>(null);
 
@@ -104,17 +128,6 @@ function ExpandableDescription({ text }: { text: string }) {
   }, [text]);
 
   const isClamped = fullHeight > COLLAPSED_HEIGHT;
-
-  function handleToggle() {
-    const next = !expanded;
-    setExpanded(next);
-    if (!next) {
-      // Closing: scroll back up to the section, same spot the "Soluciones"
-      // nav link lands on, instead of leaving the page wherever the
-      // collapse happened to land.
-      document.getElementById("soluciones")?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  }
 
   return (
     <div className="mt-2">
@@ -132,7 +145,7 @@ function ExpandableDescription({ text }: { text: string }) {
       {isClamped && (
         <button
           type="button"
-          onClick={handleToggle}
+          onClick={onToggle}
           aria-label={expanded ? "Ver menos" : "Ver más"}
           className="mx-auto mt-1 flex h-6 w-6 items-center justify-center text-foreground/50 transition-colors hover:text-foreground"
         >
