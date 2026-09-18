@@ -49,7 +49,9 @@ create table if not exists public.site_settings (
   hero_subheading text not null default '',
   email text not null default '',
   github_url text not null default '',
-  cv_url text
+  linkedin_url text,
+  cv_url_es text,
+  cv_url_en text
 );
 
 insert into public.site_settings

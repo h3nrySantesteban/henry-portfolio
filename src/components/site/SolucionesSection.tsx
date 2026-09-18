@@ -1,8 +1,9 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { ArrowLeft, ArrowRight, ArrowUpRight, Layers } from "lucide-react";
+import { ArrowLeft, ArrowRight, ArrowUpRight, ChevronDown, Layers } from "lucide-react";
+import { cn } from "@/lib/utils";
 import type { Solution } from "@/lib/database.types";
 
 export function SolucionesSection({ solutions }: { solutions: Solution[] }) {
@@ -15,13 +16,11 @@ export function SolucionesSection({ solutions }: { solutions: Solution[] }) {
   }
 
   return (
-    <section id="soluciones" className="mx-auto max-w-6xl px-6 py-28">
+    <section id="soluciones" className="mx-auto max-w-6xl scroll-mt-24 px-6 py-28">
       <div className="mb-10 flex flex-wrap items-end justify-between gap-6">
         <div>
           <p className="text-sm font-medium text-foreground/50">Soluciones</p>
-          <h2 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
-            Proyectos personales
-          </h2>
+          <h2 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">Proyectos</h2>
         </div>
 
         {solutions.length > 2 && (
@@ -85,10 +84,61 @@ export function SolucionesSection({ solutions }: { solutions: Solution[] }) {
                 </a>
               )}
             </div>
-            <p className="mt-2 text-foreground/60">{solution.description}</p>
+            <ExpandableDescription text={solution.description} />
           </article>
         ))}
       </div>
     </section>
+  );
+}
+
+const COLLAPSED_HEIGHT = 72;
+
+function ExpandableDescription({ text }: { text: string }) {
+  const [expanded, setExpanded] = useState(false);
+  const [fullHeight, setFullHeight] = useState(COLLAPSED_HEIGHT);
+  const textRef = useRef<HTMLParagraphElement>(null);
+
+  useEffect(() => {
+    if (textRef.current) setFullHeight(textRef.current.scrollHeight);
+  }, [text]);
+
+  const isClamped = fullHeight > COLLAPSED_HEIGHT;
+
+  function handleToggle() {
+    const next = !expanded;
+    setExpanded(next);
+    if (!next) {
+      // Closing: scroll back up to the section, same spot the "Soluciones"
+      // nav link lands on, instead of leaving the page wherever the
+      // collapse happened to land.
+      document.getElementById("soluciones")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
+
+  return (
+    <div className="mt-2">
+      <div
+        className="relative overflow-hidden transition-[max-height] duration-300 ease-out"
+        style={{ maxHeight: expanded ? fullHeight : COLLAPSED_HEIGHT }}
+      >
+        <p ref={textRef} className="text-foreground/60">
+          {text}
+        </p>
+        {!expanded && isClamped && (
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-background to-transparent" />
+        )}
+      </div>
+      {isClamped && (
+        <button
+          type="button"
+          onClick={handleToggle}
+          aria-label={expanded ? "Ver menos" : "Ver más"}
+          className="mx-auto mt-1 flex h-6 w-6 items-center justify-center text-foreground/50 transition-colors hover:text-foreground"
+        >
+          <ChevronDown size={16} className={cn("transition-transform duration-300", expanded && "rotate-180")} />
+        </button>
+      )}
+    </div>
   );
 }

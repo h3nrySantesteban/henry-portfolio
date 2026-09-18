@@ -18,20 +18,25 @@ export function CopyEmailButton({ email }: { email: string }) {
   }
 
   return (
-    <button
-      type="button"
-      onClick={handleClick}
-      className={cn(
-        "group flex h-11 items-center rounded-full border border-surface bg-surface/40 pl-4 pr-4",
-        "text-sm text-foreground transition-colors duration-300 hover:bg-surface",
-      )}
-    >
-      {copied ? <Check size={16} className="shrink-0 text-foreground" /> : <Mail size={16} className="shrink-0" />}
-      <span className="grid grid-cols-[0fr] transition-[grid-template-columns] duration-300 ease-out group-hover:grid-cols-[1fr]">
-        <span className="overflow-hidden whitespace-nowrap">
-          <span className="pl-2">{copied ? "¡Copiado!" : email}</span>
+    // Fixed-size placeholder: this is what participates in the flex row,
+    // so it never resizes and siblings never move.
+    <div className="relative h-7 w-[34px]">
+      {/* Absolutely positioned and pinned to the right edge, so growing it
+          on hover only extends further left instead of pushing layout. */}
+      <button
+        type="button"
+        onClick={handleClick}
+        aria-label="Copiar email"
+        className={cn(
+          "group absolute right-0 top-1/2 flex -translate-y-1/2 items-center transition-colors duration-300",
+          copied ? "text-foreground/70" : "text-foreground",
+        )}
+      >
+        <span className="max-w-0 overflow-hidden whitespace-nowrap transition-[max-width] duration-300 ease-out group-hover:max-w-[240px]">
+          <span className="pr-2 text-sm">{copied ? "¡Copiado!" : email}</span>
         </span>
-      </span>
-    </button>
+        {copied ? <Check size={34} className="shrink-0" /> : <Mail size={34} className="shrink-0" />}
+      </button>
+    </div>
   );
 }

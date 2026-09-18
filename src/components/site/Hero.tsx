@@ -1,13 +1,14 @@
-import { Download } from "lucide-react";
 import { CopyEmailButton } from "@/components/site/CopyEmailButton";
+import { CvDownloadMenu } from "@/components/site/CvDownloadMenu";
 import { GithubIcon } from "@/components/icons/GithubIcon";
+import { LinkedinIcon } from "@/components/icons/LinkedinIcon";
 import type { SiteSettings } from "@/lib/database.types";
 
 export function Hero({ settings }: { settings: SiteSettings }) {
   const lines = settings.hero_heading.split("\n");
 
   return (
-    <section className="flex min-h-[85vh] flex-col items-center justify-center px-6 text-center">
+    <section className="flex min-h-[calc(100vh-5rem)] flex-col items-center justify-center px-6 text-center">
       <h1 className="max-w-3xl text-5xl font-semibold tracking-tight text-balance sm:text-6xl">
         {lines.map((line, i) => (
           <span key={i} className="block">
@@ -21,30 +22,31 @@ export function Hero({ settings }: { settings: SiteSettings }) {
       </p>
 
       <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+        <CopyEmailButton email={settings.email} />
+
         <a
           href={settings.github_url}
           target="_blank"
           rel="noreferrer noopener"
           aria-label="GitHub"
-          className="flex h-11 w-11 items-center justify-center rounded-full border border-surface bg-surface/40 text-foreground transition-colors hover:bg-surface"
+          className="text-foreground transition-colors hover:text-foreground/60"
         >
-          <GithubIcon size={18} />
+          <GithubIcon size={29} />
         </a>
 
-        {settings.cv_url && (
+        {settings.linkedin_url && (
           <a
-            href={settings.cv_url}
+            href={settings.linkedin_url}
             target="_blank"
             rel="noreferrer noopener"
-            download
-            className="flex h-11 items-center gap-2 rounded-full bg-foreground px-5 text-sm font-medium text-background transition-opacity hover:opacity-90"
+            aria-label="LinkedIn"
+            className="text-foreground transition-colors hover:text-foreground/60"
           >
-            <Download size={16} />
-            Descargar CV
+            <LinkedinIcon size={28} />
           </a>
         )}
 
-        <CopyEmailButton email={settings.email} />
+        <CvDownloadMenu cvUrlEs={settings.cv_url_es} cvUrlEn={settings.cv_url_en} />
       </div>
     </section>
   );

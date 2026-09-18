@@ -21,9 +21,14 @@ export default async function Home() {
         <Hero settings={settings} />
         <TrabajosSection companies={companies} />
         <SolucionesSection solutions={solutions} />
-        <BlogSection posts={posts} authorName={settings.full_name} />
+        <BlogSection posts={posts} />
       </main>
-      <Footer fullName={settings.full_name} email={settings.email} githubUrl={settings.github_url} />
+      <Footer
+        fullName={settings.full_name}
+        email={settings.email}
+        githubUrl={settings.github_url}
+        linkedinUrl={settings.linkedin_url}
+      />
     </>
   );
 }

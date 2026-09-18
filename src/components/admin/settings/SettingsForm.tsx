@@ -15,7 +15,9 @@ export function SettingsForm({ initial }: { initial: SiteSettings }) {
   const [heroSubheading, setHeroSubheading] = useState(initial.hero_subheading);
   const [email, setEmail] = useState(initial.email);
   const [githubUrl, setGithubUrl] = useState(initial.github_url);
-  const [cvUrl, setCvUrl] = useState<string | null>(initial.cv_url);
+  const [linkedinUrl, setLinkedinUrl] = useState(initial.linkedin_url ?? "");
+  const [cvUrlEs, setCvUrlEs] = useState<string | null>(initial.cv_url_es);
+  const [cvUrlEn, setCvUrlEn] = useState<string | null>(initial.cv_url_en);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -36,7 +38,9 @@ export function SettingsForm({ initial }: { initial: SiteSettings }) {
         hero_subheading: heroSubheading,
         email,
         github_url: githubUrl,
-        cv_url: cvUrl,
+        linkedin_url: linkedinUrl || null,
+        cv_url_es: cvUrlEs,
+        cv_url_en: cvUrlEn,
       })
       .eq("id", 1);
 
@@ -108,9 +112,24 @@ export function SettingsForm({ initial }: { initial: SiteSettings }) {
         />
       </Field>
 
+      <Field label="URL de LinkedIn (opcional)">
+        <input
+          type="url"
+          value={linkedinUrl}
+          onChange={(e) => setLinkedinUrl(e.target.value)}
+          placeholder="https://www.linkedin.com/in/..."
+          className="input"
+        />
+      </Field>
+
       <div>
-        <label className="mb-1.5 block text-sm text-foreground/70">CV (PDF)</label>
-        <FileUploader folder="cv" value={cvUrl} onChange={setCvUrl} accept="application/pdf" isImage={false} />
+        <label className="mb-1.5 block text-sm text-foreground/70">CV en Español (PDF)</label>
+        <FileUploader folder="cv" value={cvUrlEs} onChange={setCvUrlEs} accept="application/pdf" isImage={false} />
+      </div>
+
+      <div>
+        <label className="mb-1.5 block text-sm text-foreground/70">CV en Inglés (PDF)</label>
+        <FileUploader folder="cv" value={cvUrlEn} onChange={setCvUrlEn} accept="application/pdf" isImage={false} />
       </div>
 
       {error && <p className="text-sm text-red-400">{error}</p>}

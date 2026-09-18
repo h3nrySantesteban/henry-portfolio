@@ -25,13 +25,18 @@ export default async function BlogPage() {
           ) : (
             <div className="mt-14 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
               {posts.map((post) => (
-                <BlogCard key={post.id} post={post} authorName={settings.full_name} />
+                <BlogCard key={post.id} post={post} />
               ))}
             </div>
           )}
         </div>
       </main>
-      <Footer fullName={settings.full_name} email={settings.email} githubUrl={settings.github_url} />
+      <Footer
+        fullName={settings.full_name}
+        email={settings.email}
+        githubUrl={settings.github_url}
+        linkedinUrl={settings.linkedin_url}
+      />
     </>
   );
 }

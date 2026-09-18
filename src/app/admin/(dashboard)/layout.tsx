@@ -13,10 +13,10 @@ const NAV = [
 export default function AdminDashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen flex-1 flex-col md:flex-row">
-      <aside className="flex shrink-0 flex-col justify-between border-b border-surface/70 px-4 py-4 md:w-56 md:border-b-0 md:border-r md:px-5 md:py-6">
+      <aside className="scrollbar-none flex shrink-0 flex-col justify-between overflow-y-auto border-b border-surface/70 px-4 py-4 md:sticky md:top-0 md:h-screen md:w-56 md:border-b-0 md:border-r md:px-5 md:py-6">
         <div>
           <p className="px-2 text-sm font-medium">Admin</p>
-          <nav className="mt-5 flex gap-1 overflow-x-auto md:flex-col md:overflow-visible">
+          <nav className="mt-5 flex gap-1 overflow-x-auto scrollbar-none md:flex-col md:overflow-visible">
             {NAV.map(({ href, label, icon: Icon }) => (
               <Link
                 key={href}
@@ -43,7 +43,7 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
         </div>
       </aside>
 
-      <main className="flex-1 px-6 py-8 md:px-10 md:py-10">{children}</main>
+      <main className="min-w-0 flex-1 px-6 py-8 md:px-10 md:py-10">{children}</main>
     </div>
   );
 }

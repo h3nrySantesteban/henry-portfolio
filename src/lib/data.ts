@@ -10,7 +10,9 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     "Desarrollo aplicaciones web prolijas y mantenibles, del backend al pixel, enfocado en resolver problemas reales.",
   email: "henrysantesteban@gmail.com",
   github_url: "https://github.com",
-  cv_url: null,
+  linkedin_url: null,
+  cv_url_es: null,
+  cv_url_en: null,
 };
 
 export async function getSiteSettings(): Promise<SiteSettings> {

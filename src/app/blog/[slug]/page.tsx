@@ -63,7 +63,12 @@ export default async function BlogPostPage({ params }: Props) {
           </div>
         </article>
       </main>
-      <Footer fullName={settings.full_name} email={settings.email} githubUrl={settings.github_url} />
+      <Footer
+        fullName={settings.full_name}
+        email={settings.email}
+        githubUrl={settings.github_url}
+        linkedinUrl={settings.linkedin_url}
+      />
     </>
   );
 }

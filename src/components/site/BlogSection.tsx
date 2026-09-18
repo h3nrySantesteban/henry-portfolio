@@ -3,13 +3,13 @@ import { ArrowRight } from "lucide-react";
 import { BlogCard } from "@/components/site/BlogCard";
 import type { BlogPost } from "@/lib/database.types";
 
-export function BlogSection({ posts, authorName }: { posts: BlogPost[]; authorName: string }) {
+export function BlogSection({ posts }: { posts: BlogPost[] }) {
   if (posts.length === 0) return null;
 
   const preview = posts.slice(0, 3);
 
   return (
-    <section id="blog" className="mx-auto max-w-6xl px-6 py-28">
+    <section id="blog" className="mx-auto max-w-6xl scroll-mt-24 px-6 py-28">
       <div className="mb-10 flex flex-wrap items-end justify-between gap-6">
         <div>
           <p className="text-sm font-medium text-foreground/50">Blog</p>
@@ -31,7 +31,7 @@ export function BlogSection({ posts, authorName }: { posts: BlogPost[]; authorNa
 
       <div className="grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
         {preview.map((post) => (
-          <BlogCard key={post.id} post={post} authorName={authorName} />
+          <BlogCard key={post.id} post={post} />
         ))}
       </div>
     </section>

@@ -40,7 +40,9 @@ export type SiteSettings = {
   hero_subheading: string;
   email: string;
   github_url: string;
-  cv_url: string | null;
+  linkedin_url: string | null;
+  cv_url_es: string | null;
+  cv_url_en: string | null;
 };
 
 type Table<Row, Insert> = {

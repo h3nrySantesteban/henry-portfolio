@@ -3,7 +3,7 @@ import Link from "next/link";
 import { FileText } from "lucide-react";
 import type { BlogPost } from "@/lib/database.types";
 
-export function BlogCard({ post, authorName }: { post: BlogPost; authorName: string }) {
+export function BlogCard({ post }: { post: BlogPost }) {
   const date = new Date(post.created_at).toLocaleDateString("es-ES", {
     day: "numeric",
     month: "short",
@@ -38,19 +38,7 @@ export function BlogCard({ post, authorName }: { post: BlogPost; authorName: str
       </h3>
       <p className="mt-1 line-clamp-2 text-sm text-foreground/60">{post.excerpt}</p>
 
-      <div className="mt-4 flex items-center gap-2">
-        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-surface text-[11px] font-medium text-foreground/80">
-          {authorName
-            .split(" ")
-            .map((p) => p[0])
-            .slice(0, 2)
-            .join("")}
-        </span>
-        <div className="text-xs">
-          <p className="text-foreground/80">{authorName}</p>
-          <p className="text-foreground/40">{date}</p>
-        </div>
-      </div>
+      <p className="mt-4 text-xs text-foreground/40">{date}</p>
     </Link>
   );
 }
