@@ -16,7 +16,17 @@ export function Header({ fullName }: { fullName: string }) {
   return (
     <header className="sticky top-0 z-50 border-b border-surface/70 bg-background/80 backdrop-blur-md">
       <div className="mx-auto flex h-20 max-w-6xl items-center justify-between px-6">
-        <Link href="/" className="text-lg font-semibold tracking-tight text-foreground">
+        <Link
+          href="/"
+          onClick={(e) => {
+            // Full page load (like F5) instead of a soft navigation, so it
+            // always lands on a fresh home page at the top.
+            e.preventDefault();
+            // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+            window.location.assign("/");
+          }}
+          className="text-lg font-semibold tracking-tight text-foreground"
+        >
           {fullName}
         </Link>
 
@@ -43,7 +53,7 @@ export function Header({ fullName }: { fullName: string }) {
       </div>
 
       {open && (
-        <nav className="flex flex-col gap-1 border-t border-surface/70 px-6 py-3 md:hidden">
+        <nav className="absolute inset-x-0 top-full flex flex-col gap-1 border-y border-surface/70 bg-background px-6 py-3 md:hidden">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}

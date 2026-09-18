@@ -47,7 +47,7 @@ export function SolucionesSection({ solutions }: { solutions: Solution[] }) {
 
       <div
         ref={scrollerRef}
-        className="scrollbar-none flex snap-x snap-mandatory gap-6 overflow-x-auto pb-2"
+        className="scrollbar-none flex snap-x snap-mandatory gap-6 overflow-x-auto overscroll-x-contain pb-2"
       >
         {solutions.map((solution) => (
           <article

@@ -112,7 +112,7 @@ export function TrabajosSection({ companies }: { companies: Company[] }) {
       <div
         ref={scrollerRef}
         className={cn(
-          "flex items-center gap-3 overflow-x-auto",
+          "flex items-center gap-3 overflow-x-auto overscroll-x-contain",
           isCarousel && "scrollbar-none snap-x snap-mandatory scroll-smooth px-1",
         )}
       >
@@ -136,7 +136,7 @@ export function TrabajosSection({ companies }: { companies: Company[] }) {
                 alt={company.name}
                 width={140}
                 height={56}
-                className="max-h-14 w-auto object-contain"
+                className="h-14 w-auto max-w-36 object-contain"
               />
             ) : (
               <span className="flex items-center gap-1.5 text-sm text-foreground/70">
