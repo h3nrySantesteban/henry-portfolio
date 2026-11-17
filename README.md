@@ -54,6 +54,10 @@ Everything is editable from `/admin`, no redeploy required:
 3. Add the same two environment variables from step 2 in the Vercel project settings.
 4. Deploy. Then, in Supabase → **Authentication → URL Configuration**, add your Vercel domain to the allowed **Site URL** / **Redirect URLs**.
 
+### Keep Supabase awake
+
+Supabase's free tier pauses a project after 7 days without activity. `vercel.json` schedules a daily Vercel Cron job that calls `/api/heartbeat`, which runs a tiny read against `site_settings`. Optionally add a `CRON_SECRET` environment variable in Vercel (any long random string) to make that endpoint reject requests that don't come from the cron job. Check the runs in Vercel → **Settings → Cron Jobs**.
+
 ## Project structure
 
 ```
