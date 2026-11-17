@@ -23,7 +23,7 @@ Copy `.env.local.example` to `.env.local` and fill in the values from step 1.4:
 ```bash
 cp .env.local.example .env.local
 ```
-test
+
 ```
 NEXT_PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
